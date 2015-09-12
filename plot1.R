@@ -1,33 +1,16 @@
 
 setwd("D:/Online Courses/Data Science/Exploratory Data Analysis")
-library("iterators");
 
-lines <- ireadLines(file.path("household_power_consumption.txt") );
-columnNames = nextElem(lines);
-columnNames = strsplit(columnNames, split = ";")[[1]]
-
-data = data.frame(matrix("", 10000, 9) , stringsAsFactors = FALSE);
-colnames(data) = columnNames;
-
-rowCount = 0;
-for (i in 1: 100000){
-  line = nextElem(lines);
-  elements = strsplit(line, split = ";")[[1]]
-  date = elements[1];
-  if (date == "2/1/2007" | date == "2/2/2007"){
-    rowCount = rowCount + 1;
-    data[rowCount, ] = elements;
-  }
+if (exists("powerData") == FALSE){
+  powerData = read.table(unz("exdata-data-household_power_consumption.zip", "household_power_consumption.txt"), 
+                    header=T, sep=";", stringsAsFactors = FALSE);
+  powerData = subset(powerData, Date == "1/2/2007" | Date == "2/2/2007");
+  powerData[, c(3:9)] <- sapply(powerData[, c(3:9)], as.numeric);
 }
-
-data = data[1:rowCount, ];
 
 ################
 
-data$Global_active_power = as.numeric(data$Global_active_power);
-
-
 png("plot1.png", width = 480, height = 480)
-hist(x = data$Global_active_power, col = "red",  xlab = "Global Active Power (kilowatts)", main = "Global Active Power")
+hist(x = powerData$Global_active_power, col = "red",  xlab = "Global Active Power (kilowatts)", main = "Global Active Power")
 
 dev.off()
